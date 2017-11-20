@@ -48,9 +48,6 @@ class WhiskyScraper:
             country = b.replace('Herkunftsland:', '').strip()
             ret['country'] = country
 
-            a = 0
-            pass
-
         ret['price'] = int(
             find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.', ''))
 
