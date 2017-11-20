@@ -42,6 +42,15 @@ class WhiskyScraper:
                 ' '),
 
         })
+        #   self._country='International'
+        if self._country == 'International':
+            b = soup.select('div#detailsMain div.article-consumer-notice div.list-csv')[1].text.strip().split("\n")[1]
+            country = b.replace('Herkunftsland:', '').strip()
+            ret['country'] = country
+
+            a = 0
+            pass
+
         ret['price'] = int(
             find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.', ''))
 
@@ -75,7 +84,7 @@ class WhiskyScraper:
     def pages_urls(self, page_size=30, overview_page='https://www.whisky.de/shop/Schottland/'):
         wine_page_urls = set()
         n_pages = int(self.number_of_whiskys(overview_page=overview_page) / page_size + 1)
-        n_pages = 43
+        #  n_pages = 43
 
         for current_page in tqdm(range(0, n_pages + 1), desc='Scraping  page urls', unit='page'):
             page_url = overview_page + "?_artperpage=30&pgNr={}".format(current_page)
@@ -89,7 +98,6 @@ class WhiskyScraper:
     def whiskys(self):
 
         wines = []
-
 
         self._country = 'Scotland'
         wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/Schottland/'))
@@ -107,6 +115,7 @@ class WhiskyScraper:
             wines.append(self.extract_data(url))
 
         self._country = 'International'
+
         wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/International/'))
         for url in tqdm(wine_pages_urls, desc='Scraping Whiskys', unit='whisky', total=len(wine_pages_urls)):
             wines.append(self.extract_data(url))
