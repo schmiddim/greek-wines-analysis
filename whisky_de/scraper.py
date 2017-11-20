@@ -47,7 +47,7 @@ class WhiskyScraper:
 
         ret['whisky_type'] = soup.select("div.productMainInfo  > div.article-attributes  > ul > li")[0].text.replace(
             'Sorte:',
-            '').strip(),
+            '').strip()
 
         # Rating value
         str_rating_value = find_non_empty('span', class_='rating-value')
