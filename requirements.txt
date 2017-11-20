@@ -7,3 +7,4 @@ matplotlib
 seaborn
 sklearn
 openpyxl
+ipykernel

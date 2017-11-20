@@ -11,9 +11,8 @@ class WhiskyScraper:
         self._session = req.Session()
         self._country = country
 
-    @property
-    def number_of_whiskys(self):
-        bs = BeautifulSoup(self._session.get('https://www.whisky.de/shop/Schottland/').content, 'lxml')
+    def number_of_whiskys(self, overview_page='https://www.whisky.de/shop/Schottland/'):
+        bs = BeautifulSoup(self._session.get(overview_page).content, 'lxml')
         count = int(bs.find('div', class_='list-locator-count').find('strong').text)
         return count
 
@@ -44,7 +43,7 @@ class WhiskyScraper:
 
         })
         ret['price'] = int(
-            find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.',   ''))
+            find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.', ''))
 
         ret['whisky_type'] = soup.select("div.productMainInfo  > div.article-attributes  > ul > li")[0].text.replace(
             'Sorte:',
@@ -73,13 +72,13 @@ class WhiskyScraper:
             ret['taste_box_qualitiy'] = soup.find(id="tastevote_criteriainput_6").get('value')
         return ret
 
-    def pages_urls(self, page_size=30):
+    def pages_urls(self, page_size=30, overview_page='https://www.whisky.de/shop/Schottland/'):
         wine_page_urls = set()
-        n_pages = int(self.number_of_whiskys / page_size + 1)
+        n_pages = int(self.number_of_whiskys(overview_page=overview_page) / page_size + 1)
         n_pages = 43
 
         for current_page in tqdm(range(0, n_pages + 1), desc='Scraping  page urls', unit='page'):
-            page_url = "https://www.whisky.de/shop/Schottland/?_artperpage=30&pgNr={}".format(current_page)
+            page_url = overview_page + "?_artperpage=30&pgNr={}".format(current_page)
             page_soup = BeautifulSoup(req.get(page_url).content, 'lxml')
             wine_urls = map(lambda li: li.find('a').get('href'),
                             page_soup.find_all('div', class_='article-more', recursive=True)
@@ -91,7 +90,25 @@ class WhiskyScraper:
 
         wines = []
 
-        wine_pages_urls = list(self.pages_urls())
+
+        self._country = 'Scotland'
+        wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/Schottland/'))
         for url in tqdm(wine_pages_urls, desc='Scraping Whiskys', unit='whisky', total=len(wine_pages_urls)):
             wines.append(self.extract_data(url))
+
+        self._country = 'Ireland'
+        wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/Irland/'))
+        for url in tqdm(wine_pages_urls, desc='Scraping Whiskys', unit='whisky', total=len(wine_pages_urls)):
+            wines.append(self.extract_data(url))
+
+        self._country = 'USA'
+        wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/USA/'))
+        for url in tqdm(wine_pages_urls, desc='Scraping Whiskys', unit='whisky', total=len(wine_pages_urls)):
+            wines.append(self.extract_data(url))
+
+        self._country = 'International'
+        wine_pages_urls = list(self.pages_urls(overview_page='https://www.whisky.de/shop/International/'))
+        for url in tqdm(wine_pages_urls, desc='Scraping Whiskys', unit='whisky', total=len(wine_pages_urls)):
+            wines.append(self.extract_data(url))
+
         return wines
