@@ -30,7 +30,7 @@ class WhiskyScraper:
             'price': int(find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '')),
             'whisky_type': soup.select("div.productMainInfo  > div.article-attributes  > ul > li")[0].text.replace(
                 'Sorte:', '').strip(),
-            'img': soup.find(id='image-zoom-first-image').get('src')
+            'img': soup.find(id='image-zoom-first-image').get('src'),
             'distillery': find_non_empty('div',  class_= 'article-company').strip()
 
         })
