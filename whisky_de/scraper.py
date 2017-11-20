@@ -31,13 +31,10 @@ class WhiskyScraper:
             'name': find_non_empty('span', itemprop='name'),
             'country': self._country,
             'whisky_type': None,
-            'price' : None,
+            'price': None,
             'alcohol_%': None,
             'avg_rating_%': None,
             'n_votes': None,
-            'price': int(
-                find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.',
-                                                                                                                   '')),
             'distillery': find_non_empty('div', class_='article-company').strip(),
             'url': page_url,
             'img': soup.find(id='image-zoom-first-image').get('src'),
@@ -47,8 +44,8 @@ class WhiskyScraper:
 
         })
         ret['price'] = int(
-            find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.',
-                                                                                                               '')),
+            find_non_empty('span', class_='article-price-default').replace('EUR', '').replace(',', '').replace('.',   ''))
+
         ret['whisky_type'] = soup.select("div.productMainInfo  > div.article-attributes  > ul > li")[0].text.replace(
             'Sorte:',
             '').strip(),
@@ -56,7 +53,7 @@ class WhiskyScraper:
         # Rating value
         str_rating_value = find_non_empty('span', class_='rating-value')
         if str_rating_value != '':
-            ret['avg_rating_%'] = float(str_rating_value.strip().replace(',','.'))
+            ret['avg_rating_%'] = float(str_rating_value.strip().replace(',', '.'))
             ret['n_votes'] = soup.find("a", itemprop='aggregateRating').find('span',
                                                                              class_='rating-count').text.replace('(',
                                                                                                                  '').replace(
@@ -75,7 +72,6 @@ class WhiskyScraper:
             ret['taste_box_total'] = soup.find(id="tastevote_criteriainput_5").get('value')
             ret['taste_box_qualitiy'] = soup.find(id="tastevote_criteriainput_6").get('value')
         return ret
-
 
     def pages_urls(self, page_size=30):
         wine_page_urls = set()
